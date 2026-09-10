@@ -60,6 +60,7 @@ export const metadata: Metadata = {
 
 import { DynamicThemeProvider } from '@/components/theme/DynamicThemeProvider';
 import { SecurityShield } from '@/components/security/SecurityShield';
+import { Analytics } from '@vercel/analytics/next';
 
 export default function RootLayout({
   children,
@@ -142,6 +143,7 @@ export default function RootLayout({
             <Footer />
           </DynamicThemeProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
