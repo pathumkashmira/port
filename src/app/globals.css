@@ -59,14 +59,12 @@ html {
   color: var(--text-primary);
   font-family: var(--font-inter);
   scroll-behavior: smooth;
-  overflow-x: hidden;
-  max-width: 100vw;
+  min-width: 1280px;
   -webkit-text-size-adjust: 100%;
 }
 
 body {
-  overflow-x: hidden;
-  max-width: 100vw;
+  min-width: 1280px;
   background: var(--bg-primary);
   min-height: 100vh;
   min-height: 100dvh;

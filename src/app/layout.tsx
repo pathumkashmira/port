@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { ViewportHUD } from '@/components/layout/ViewportHUD';
 import { Navigation } from '@/components/layout/Navigation';
@@ -6,6 +6,14 @@ import { Footer } from '@/components/layout/Footer';
 import { CustomCursor } from '@/components/cursor/CustomCursor';
 import { NoiseOverlay } from '@/components/ui/NoiseOverlay';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
+
+export const viewport: Viewport = {
+  width: 1280,
+  initialScale: 0.3,
+  minimumScale: 0.2,
+  maximumScale: 5,
+  userScalable: true,
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://pethum.dev'),
@@ -110,6 +118,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <head>
+        <meta name="viewport" content="width=1280, initial-scale=0.3, minimum-scale=0.2, maximum-scale=5, user-scalable=yes" />
         <script
           dangerouslySetInnerHTML={{
             __html: `(function() {

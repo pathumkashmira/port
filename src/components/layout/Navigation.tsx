@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, ArrowUpRight, Sparkles } from 'lucide-react';
+import { ArrowUpRight, Sparkles } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
 
 import { useStudioStore } from '@/lib/store';
@@ -23,12 +23,12 @@ const DEFAULT_NAV_LINKS: NavLinkItem[] = [
   { label: 'Fiverr', href: '/fiverr' },
   { label: 'Store', href: 'https://filxy.store', external: true },
   { label: 'Contact', href: '/contact' },
+  { label: 'Admin', href: '/admin' },
 ];
 
 export function Navigation() {
   const pathname = usePathname();
   const { settings } = useStudioStore();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
   const customNavLinks: NavLinkItem[] = (settings.customPages || [])
@@ -51,20 +51,6 @@ export function Navigation() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  // Close mobile menu on route change
-  useEffect(() => {
-    setMobileMenuOpen(false);
-  }, [pathname]);
-
-  // Prevent scroll when mobile menu is open
-  useEffect(() => {
-    if (mobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-  }, [mobileMenuOpen]);
 
   return (
     <header
@@ -96,9 +82,9 @@ export function Navigation() {
           </div>
         </Link>
 
-        {/* Desktop View Navigation Bar - Active Across All Devices */}
+        {/* Desktop View Navigation Bar */}
         <nav 
-          className="flex items-center gap-3 sm:gap-5 lg:gap-6 overflow-x-auto no-scrollbar py-1 max-w-[65vw] sm:max-w-none" 
+          className="flex items-center gap-5 lg:gap-6" 
           aria-label="Main Navigation"
         >
           {allNavLinks.map((link) => {
@@ -110,17 +96,17 @@ export function Navigation() {
                 target="_blank"
                 rel="noreferrer noopener"
                 data-cursor="STORE"
-                className="inline-flex items-center gap-1 font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.18em] sm:tracking-[0.22em] text-stone-600 dark:text-slate-300 transition-colors hover:text-gold shrink-0"
+                className="inline-flex items-center gap-1 font-mono text-[11px] uppercase tracking-[0.22em] text-stone-600 dark:text-slate-300 transition-colors hover:text-gold shrink-0"
               >
                 <span>{link.label}</span>
-                <ArrowUpRight className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-gold" />
+                <ArrowUpRight className="h-3 w-3 text-gold" />
               </a>
             ) : (
               <Link
                 key={link.label}
                 href={link.href}
                 data-cursor="EXPLORE"
-                className={`border-b pb-0.5 sm:pb-1 font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.18em] sm:tracking-[0.22em] transition-all duration-300 shrink-0 ${
+                className={`border-b pb-1 font-mono text-[11px] uppercase tracking-[0.22em] transition-all duration-300 shrink-0 ${
                   isActive
                     ? 'border-accent-glow text-accent-glow shadow-[0_4px_10px_rgba(56,189,248,0.3)] font-medium'
                     : 'border-transparent text-stone-600 dark:text-slate-300 hover:border-gold/60 hover:text-gold'
@@ -139,74 +125,13 @@ export function Navigation() {
           <Link
             href="/contact"
             data-cursor="HIRE"
-            className="group relative hidden sm:inline-flex items-center gap-2 border border-gold/50 bg-gold/10 px-3 sm:px-4 py-1.5 sm:py-2 font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.22em] text-gold transition-all duration-300 hover:border-gold hover:bg-gold hover:text-[#0B0E14] hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] shrink-0"
+            className="group relative inline-flex items-center gap-2 border border-gold/50 bg-gold/10 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.22em] text-gold transition-all duration-300 hover:border-gold hover:bg-gold hover:text-[#0B0E14] hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] shrink-0"
           >
             <Sparkles className="h-3 w-3 transition-transform group-hover:rotate-12" />
             <span>Commission</span>
           </Link>
         </nav>
       </div>
-
-      {/* Cinematic Full-Screen Mobile Menu Drawer */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-x-0 bottom-0 top-[65px] z-50 flex flex-col justify-between overflow-y-auto bg-[#F7F5F0]/98 dark:bg-[#0B0E14]/98 backdrop-blur-2xl p-5 sm:p-6 lg:hidden animate-in fade-in duration-200">
-          <div className="viewport-grid absolute inset-0 opacity-15 pointer-events-none" />
-
-          <div className="relative z-10 mt-2 flex flex-col space-y-2 sm:space-y-3">
-            <div className="flex items-center justify-between border-b border-stone-200 dark:border-white/10 pb-2.5">
-              <span className="font-mono text-[10px] uppercase tracking-[0.26em] text-gold/90 font-bold">
-                Navigation Manifest
-              </span>
-              <ThemeToggle showLabel />
-            </div>
-            {allNavLinks.map((link, idx) => {
-              const isActive = pathname === link.href;
-              return link.external ? (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="flex items-center justify-between border-b border-stone-200/60 dark:border-white/5 py-2.5 font-display text-lg sm:text-2xl uppercase tracking-wider text-stone-800 dark:text-slate-200 hover:text-gold"
-                >
-                  <span>{link.label}</span>
-                  <span className="font-mono text-xs text-gold flex items-center gap-1">
-                    filxy.store <ArrowUpRight className="h-3 w-3" />
-                  </span>
-                </a>
-              ) : (
-                <Link
-                  key={link.label}
-                  href={link.href}
-                  className={`flex items-center justify-between border-b border-stone-200/60 dark:border-white/5 py-2.5 font-display text-lg sm:text-2xl uppercase tracking-wider transition-colors ${
-                    isActive ? 'text-accent-glow pl-2 border-accent-glow/40' : 'text-stone-800 dark:text-slate-200 hover:text-gold'
-                  }`}
-                >
-                  <span>{link.label}</span>
-                  <span className="font-mono text-xs text-stone-400 dark:text-slate-500">
-                    0{idx + 1}
-                  </span>
-                </Link>
-              );
-            })}
-          </div>
-
-          <div className="relative z-10 border-t border-stone-200 dark:border-white/10 pt-4 mt-6">
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-stone-500 dark:text-slate-400">
-              Pethum Kashmira · Digital Creator &amp; 3D Artist
-            </p>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-gold mt-0.5">
-              ORVEX Creative Studio · Filxy Store
-            </p>
-            <Link
-              href="/contact"
-              className="mt-3 flex w-full items-center justify-center gap-2 bg-gold px-5 py-3 font-mono text-xs uppercase tracking-[0.2em] text-[#0B0E14] font-bold shadow-lg"
-            >
-              Start A Commission Brief →
-            </Link>
-          </div>
-        </div>
-      )}
     </header>
   );
 }
