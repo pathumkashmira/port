@@ -6,11 +6,12 @@ import { Footer } from '@/components/layout/Footer';
 import { CustomCursor } from '@/components/cursor/CustomCursor';
 import { NoiseOverlay } from '@/components/ui/NoiseOverlay';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
+import { ViewModeSwitch } from '@/components/layout/ViewModeSwitch';
 
 export const viewport: Viewport = {
-  width: 'device-width',
-  initialScale: 1,
-  minimumScale: 0.5,
+  width: 1280,
+  initialScale: 0.3,
+  minimumScale: 0.2,
   maximumScale: 5,
   userScalable: true,
 };
@@ -118,7 +119,6 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=5.0, user-scalable=yes" />
         <script
           dangerouslySetInnerHTML={{
             __html: `(function() {
@@ -130,6 +130,28 @@ export default function RootLayout({
                 } else {
                   document.documentElement.classList.add('dark');
                   document.documentElement.classList.remove('light');
+                }
+
+                var viewMode = localStorage.getItem('pk_view_mode') || 'desktop';
+                var updateViewport = function() {
+                  var metas = document.querySelectorAll('meta[name="viewport"]');
+                  if (viewMode === 'desktop') {
+                    var screenW = window.screen ? window.screen.width : 390;
+                    var scale = Math.min(1, Math.max(0.2, screenW / 1280));
+                    var content = 'width=1280, initial-scale=' + scale.toFixed(3) + ', minimum-scale=0.2, maximum-scale=5.0, user-scalable=yes';
+                    metas.forEach(function(m) { m.setAttribute('content', content); });
+                    document.documentElement.classList.add('force-desktop-view');
+                    if (document.body) document.body.classList.add('force-desktop-view');
+                  } else {
+                    var mobContent = 'width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=5.0, user-scalable=yes';
+                    metas.forEach(function(m) { m.setAttribute('content', mobContent); });
+                    document.documentElement.classList.remove('force-desktop-view');
+                    if (document.body) document.body.classList.remove('force-desktop-view');
+                  }
+                };
+                updateViewport();
+                if (document.readyState === 'loading') {
+                  document.addEventListener('DOMContentLoaded', updateViewport);
                 }
               } catch (e) {}
             })();`,
@@ -148,6 +170,7 @@ export default function RootLayout({
             <NoiseOverlay />
             <ViewportHUD />
             <Navigation />
+            <ViewModeSwitch />
             <main className="relative flex-1">{children}</main>
             <Footer />
           </DynamicThemeProvider>
