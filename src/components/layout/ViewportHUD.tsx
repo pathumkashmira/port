@@ -15,10 +15,10 @@ export function ViewportHUD() {
             <span className="hidden sm:inline">LIVE STATUS:</span>
             <span className="text-white/80">COMMISSIONS OPEN</span>
           </span>
-          <span className="hidden md:inline text-white/20">|</span>
-          <span className="hidden md:flex items-center gap-1.5 text-white/60">
-            <Box className="h-3 w-3 text-gold" />
-            <span>BLENDER 4.x / CYCLES & EEVEE NEXT</span>
+          <span className="text-white/20">|</span>
+          <span className="flex items-center gap-1 sm:gap-1.5 text-white/60 text-[8px] sm:text-[10px]">
+            <Box className="h-2.5 sm:h-3 w-2.5 sm:w-3 text-gold" />
+            <span>BLENDER 4.x · CYCLES</span>
           </span>
         </div>
 

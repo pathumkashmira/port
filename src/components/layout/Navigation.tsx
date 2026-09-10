@@ -96,8 +96,11 @@ export function Navigation() {
           </div>
         </Link>
 
-        {/* Desktop Minimal Navigation */}
-        <nav className="hidden lg:flex items-center gap-6" aria-label="Main Navigation">
+        {/* Desktop View Navigation Bar - Active Across All Devices */}
+        <nav 
+          className="flex items-center gap-3 sm:gap-5 lg:gap-6 overflow-x-auto no-scrollbar py-1 max-w-[65vw] sm:max-w-none" 
+          aria-label="Main Navigation"
+        >
           {allNavLinks.map((link) => {
             const isActive = pathname === link.href;
             return link.external ? (
@@ -107,17 +110,17 @@ export function Navigation() {
                 target="_blank"
                 rel="noreferrer noopener"
                 data-cursor="STORE"
-                className="inline-flex items-center gap-1 font-mono text-[11px] uppercase tracking-[0.22em] text-stone-600 dark:text-slate-300 transition-colors hover:text-gold"
+                className="inline-flex items-center gap-1 font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.18em] sm:tracking-[0.22em] text-stone-600 dark:text-slate-300 transition-colors hover:text-gold shrink-0"
               >
                 <span>{link.label}</span>
-                <ArrowUpRight className="h-3 w-3 text-gold" />
+                <ArrowUpRight className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-gold" />
               </a>
             ) : (
               <Link
                 key={link.label}
                 href={link.href}
                 data-cursor="EXPLORE"
-                className={`border-b pb-1 font-mono text-[11px] uppercase tracking-[0.22em] transition-all duration-300 ${
+                className={`border-b pb-0.5 sm:pb-1 font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.18em] sm:tracking-[0.22em] transition-all duration-300 shrink-0 ${
                   isActive
                     ? 'border-accent-glow text-accent-glow shadow-[0_4px_10px_rgba(56,189,248,0.3)] font-medium'
                     : 'border-transparent text-stone-600 dark:text-slate-300 hover:border-gold/60 hover:text-gold'
@@ -129,40 +132,19 @@ export function Navigation() {
           })}
 
           {/* Theme Toggle Button */}
-          <ThemeToggle />
+          <div className="shrink-0">
+            <ThemeToggle />
+          </div>
 
           <Link
             href="/contact"
             data-cursor="HIRE"
-            className="group relative inline-flex items-center gap-2 border border-gold/50 bg-gold/10 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.22em] text-gold transition-all duration-300 hover:border-gold hover:bg-gold hover:text-[#0B0E14] hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]"
+            className="group relative hidden sm:inline-flex items-center gap-2 border border-gold/50 bg-gold/10 px-3 sm:px-4 py-1.5 sm:py-2 font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.22em] text-gold transition-all duration-300 hover:border-gold hover:bg-gold hover:text-[#0B0E14] hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] shrink-0"
           >
             <Sparkles className="h-3 w-3 transition-transform group-hover:rotate-12" />
             <span>Commission</span>
           </Link>
         </nav>
-
-        {/* Mobile Controls: Theme Toggle + Menu Button */}
-        <div className="lg:hidden flex items-center gap-2">
-          <ThemeToggle />
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label={mobileMenuOpen ? 'Close Menu' : 'Open Navigation Menu'}
-            className="flex items-center gap-2 border border-stone-300 dark:border-white/20 bg-stone-100/90 dark:bg-slate-900/80 px-3 py-2 font-mono text-[11px] uppercase tracking-[0.2em] text-gold transition-colors hover:border-accent-glow hover:text-accent-glow"
-          >
-            {mobileMenuOpen ? (
-              <>
-                <X className="h-4 w-4 text-accent-glow" />
-                <span>Close</span>
-              </>
-            ) : (
-              <>
-                <Menu className="h-4 w-4" />
-                <span>Index</span>
-              </>
-            )}
-          </button>
-        </div>
       </div>
 
       {/* Cinematic Full-Screen Mobile Menu Drawer */}

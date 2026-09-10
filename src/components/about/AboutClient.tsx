@@ -87,33 +87,46 @@ export function AboutClient() {
               </div>
             </div>
 
-            {/* Academic Track Cards */}
-            <div className="grid sm:grid-cols-2 gap-4 pt-4">
-              <div className="glass-panel p-6 cad-corner-tl space-y-3">
-                <GraduationCap className="h-5 w-5 text-gold" />
-                <h3 className="font-display text-base font-bold uppercase text-stone-900 dark:text-white">
+            {/* Academic Track Cards - Multi-Column Desktop Grid on Mobile */}
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 pt-4">
+              <div className="glass-panel p-4 sm:p-6 cad-corner-tl space-y-2 sm:space-y-3">
+                <GraduationCap className="h-4 sm:h-5 w-4 sm:w-5 text-gold" />
+                <h3 className="font-display text-sm sm:text-base font-bold uppercase text-stone-900 dark:text-white">
                   University of Ruhuna
                 </h3>
-                <p className="text-xs text-gold dark:text-accent-glow font-mono uppercase tracking-wider">
+                <p className="text-[10px] sm:text-xs text-gold dark:text-accent-glow font-mono uppercase tracking-wider">
                   B.Sc. (Hons) Agri Business Management
                 </p>
-                <p className="text-xs text-stone-600 dark:text-slate-400 leading-relaxed">
-                  Focusing on sustainable supply chain strategies and technology integration.
+                <p className="text-[11px] sm:text-xs text-stone-600 dark:text-slate-400 leading-relaxed">
+                  Focusing on supply chain systems, agribusiness economics, and technology integration.
                 </p>
               </div>
 
-              <div className="glass-panel p-6 cad-corner-br space-y-3">
-                <Award className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                <h3 className="font-display text-base font-bold uppercase text-stone-900 dark:text-white">
+              <div className="glass-panel p-4 sm:p-6 cad-corner-br space-y-2 sm:space-y-3">
+                <Award className="h-4 sm:h-5 w-4 sm:w-5 text-emerald-600 dark:text-emerald-400" />
+                <h3 className="font-display text-sm sm:text-base font-bold uppercase text-stone-900 dark:text-white">
                   CA Sri Lanka
                 </h3>
-                <p className="text-xs text-emerald-600 dark:text-emerald-400 font-mono uppercase tracking-wider">
-                  Business Level Accountancy
+                <p className="text-[10px] sm:text-xs text-emerald-600 dark:text-emerald-400 font-mono uppercase tracking-wider">
+                  Chartered Accountancy
                 </p>
-                <p className="text-xs text-stone-600 dark:text-slate-400 leading-relaxed">
-                  Financial management, corporate law, business statistics, and auditing practices.
+                <p className="text-[11px] sm:text-xs text-stone-600 dark:text-slate-400 leading-relaxed">
+                  Business level financial management, commercial auditing, and corporate governance.
                 </p>
               </div>
+            </div>
+
+            {/* LinkedIn Verification Badge */}
+            <div className="pt-2">
+              <a
+                href="https://www.linkedin.com/in/pethum-kashmira/"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="inline-flex items-center gap-2 border border-[#0A66C2]/40 bg-[#0A66C2]/10 hover:bg-[#0A66C2]/20 px-4 py-2 font-mono text-[11px] uppercase tracking-wider text-[#38BDF8] transition-colors"
+              >
+                <span>View Verified Profile on LinkedIn</span>
+                <ArrowUpRight className="h-3.5 w-3.5 text-gold" />
+              </a>
             </div>
           </div>
 
@@ -130,14 +143,14 @@ export function AboutClient() {
                 />
                 <div className="absolute bottom-4 left-4 right-4 bg-stone-900/90 dark:bg-slate-950/95 p-3 border border-white/10 font-mono text-[10px] text-stone-200 dark:text-slate-300 backdrop-blur-md">
                   <span className="text-gold dark:text-accent-glow uppercase block tracking-wider font-bold">Viewport · Final Shaded</span>
-                  3D Digital Self-Portrait sculpted in Blender
+                  Pethum Kashmira · 3D Modeler &amp; Visual Artist
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* 3D & Digital Toolkit Grid */}
+        {/* 3D & Digital Toolkit Grid - Multi-Column Desktop Grid on Mobile */}
         <section className="space-y-8 border-t border-stone-300 dark:border-white/10 pt-20">
           <div>
             <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-gold dark:text-accent-glow">
@@ -148,11 +161,11 @@ export function AboutClient() {
             </h2>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
             {tools.map((tool) => (
               <div
                 key={tool.name}
-                className="glass-panel p-5 hover:border-gold/50 transition-all space-y-3"
+                className="glass-panel p-4 sm:p-5 hover:border-gold/50 transition-all space-y-2 sm:space-y-3"
               >
                 <div className="flex items-center justify-between">
                   <Box className="h-4 w-4 text-gold" />
@@ -160,10 +173,10 @@ export function AboutClient() {
                     {tool.badge}
                   </span>
                 </div>
-                <h4 className="font-display text-base font-bold uppercase text-stone-900 dark:text-white">
+                <h4 className="font-display text-sm sm:text-base font-bold uppercase text-stone-900 dark:text-white">
                   {tool.name}
                 </h4>
-                <p className="font-mono text-[11px] text-stone-600 dark:text-slate-400 leading-snug">
+                <p className="font-mono text-[10px] sm:text-[11px] text-stone-600 dark:text-slate-400 leading-snug">
                   {tool.role}
                 </p>
               </div>
@@ -171,7 +184,7 @@ export function AboutClient() {
           </div>
         </section>
 
-        {/* Certifications Row */}
+        {/* Certifications Row - Multi-Column Desktop Grid on Mobile */}
         <section className="border-t border-stone-300 dark:border-white/10 pt-20 space-y-8">
           <div>
             <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-gold">
@@ -182,17 +195,17 @@ export function AboutClient() {
             </h2>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {certifications.map((cert) => (
               <div
                 key={cert.title}
-                className="glass-panel p-6 space-y-2 hover:border-gold/30 transition-all"
+                className="glass-panel p-4 sm:p-6 space-y-2 hover:border-gold/30 transition-all"
               >
                 <Award className="h-4 w-4 text-gold dark:text-accent-glow" />
-                <h4 className="font-display text-sm font-bold uppercase text-stone-900 dark:text-white pt-2">
+                <h4 className="font-display text-xs sm:text-sm font-bold uppercase text-stone-900 dark:text-white pt-1 sm:pt-2">
                   {cert.title}
                 </h4>
-                <p className="font-mono text-[10px] text-stone-600 dark:text-slate-400 uppercase tracking-wider">
+                <p className="font-mono text-[9px] sm:text-[10px] text-stone-600 dark:text-slate-400 uppercase tracking-wider">
                   {cert.issuer} · {cert.year}
                 </p>
               </div>

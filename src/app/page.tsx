@@ -148,27 +148,27 @@ export default function HomePage() {
 
               {/* Viewport Telemetry Data */}
               <FadeInUp delay={0.8}>
-                <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-white/20 pt-6 font-mono text-xs text-slate-300">
-                  <div className="bg-white/5 border border-white/10 p-3 backdrop-blur-sm">
-                    <span className="text-[10px] uppercase tracking-[0.24em] text-emerald-400 block font-semibold">Specialized Gig</span>
-                    <span className="mt-1 font-display text-sm sm:text-base text-white font-bold block truncate drop-shadow-sm">
+                <div className="mt-10 grid grid-cols-3 gap-2 sm:gap-4 border-t border-white/20 pt-6 font-mono text-[10px] sm:text-xs text-slate-300">
+                  <div className="bg-white/5 border border-white/10 p-2.5 sm:p-3 backdrop-blur-sm">
+                    <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.24em] text-emerald-400 block font-semibold">Specialized Gig</span>
+                    <span className="mt-1 font-display text-xs sm:text-base text-white font-bold block truncate drop-shadow-sm">
                       Realistic 3D Product Animation
                     </span>
-                    <span className="text-[10px] text-slate-400 font-mono mt-0.5 block">Starting at $100 · 4 Days Turnaround</span>
+                    <span className="text-[9px] sm:text-[10px] text-slate-400 font-mono mt-0.5 block truncate">Starting at $100 · 4 Days Turnaround</span>
                   </div>
-                  <div className="bg-white/5 border border-white/10 p-3 backdrop-blur-sm">
-                    <span className="text-[10px] uppercase tracking-[0.24em] text-gold block font-semibold">Studio Standard</span>
-                    <span className="mt-1 font-display text-sm sm:text-base text-gold font-bold block truncate drop-shadow-sm">
+                  <div className="bg-white/5 border border-white/10 p-2.5 sm:p-3 backdrop-blur-sm">
+                    <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.24em] text-gold block font-semibold">Studio Standard</span>
+                    <span className="mt-1 font-display text-xs sm:text-base text-gold font-bold block truncate drop-shadow-sm">
                       ORVEX CG Pipeline · Cycles &amp; Eevee
                     </span>
-                    <span className="text-[10px] text-slate-400 font-mono mt-0.5 block">4K UHD Resolution · PBR Textures</span>
+                    <span className="text-[9px] sm:text-[10px] text-slate-400 font-mono mt-0.5 block truncate">4K UHD Resolution · PBR Textures</span>
                   </div>
-                  <div className="bg-white/5 border border-white/10 p-3 backdrop-blur-sm">
-                    <span className="text-[10px] uppercase tracking-[0.24em] text-[#38BDF8] block font-semibold">Client Standing</span>
-                    <span className="mt-1 font-display text-sm sm:text-base text-white font-bold block truncate drop-shadow-sm">
+                  <div className="bg-white/5 border border-white/10 p-2.5 sm:p-3 backdrop-blur-sm">
+                    <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.24em] text-[#38BDF8] block font-semibold">Client Standing</span>
+                    <span className="mt-1 font-display text-xs sm:text-base text-white font-bold block truncate drop-shadow-sm">
                       Top Rated 3D Artist · 100% 5-Star
                     </span>
-                    <span className="text-[10px] text-slate-400 font-mono mt-0.5 block">Fiverr Proven · Worldwide Delivery</span>
+                    <span className="text-[9px] sm:text-[10px] text-slate-400 font-mono mt-0.5 block truncate">Fiverr Proven · Worldwide Delivery</span>
                   </div>
                 </div>
               </FadeInUp>
@@ -225,8 +225,8 @@ export default function HomePage() {
                 </div>
               </ScrollReveal>
 
-              {/* Curated Project Grid */}
-              <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {/* Curated Project Grid - Desktop Multi-Column Grid */}
+              <div className="mt-8 sm:mt-12 grid grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-8">
                 {filteredProjects.map((project, idx) => {
                   const itemMode = selectedConfig?.itemPreviewModes?.[project.id] || globalPreviewMode;
                   return (
