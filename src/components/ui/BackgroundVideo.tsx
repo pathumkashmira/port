@@ -11,8 +11,7 @@ interface BackgroundVideoProps {
   overlayClassName?: string;
   blur?: boolean | string;
   blendMode?: 'normal' | 'screen' | 'overlay' | 'luminosity' | 'soft-light' | 'lighten';
-  showControls?: boolean;
-  interactiveParallax?: boolean;
+  priority?: boolean;
 }
 
 export function BackgroundVideo({
@@ -23,9 +22,12 @@ export function BackgroundVideo({
   overlayClassName = '',
   blur = false,
   blendMode = 'normal',
+  priority = false,
 }: BackgroundVideoProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isReady, setIsReady] = useState(false);
+  const [isInView, setIsInView] = useState(priority);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   
   // Safe hook call that won't crash if outside ThemeProvider
@@ -49,6 +51,31 @@ export function BackgroundVideo({
     }
   }, []);
 
+  // IntersectionObserver: Stream & decode ONLY when visible, pause when offscreen
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || typeof IntersectionObserver === 'undefined') {
+      setIsInView(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          setIsInView(entry.isIntersecting);
+        });
+      },
+      {
+        rootMargin: '160px 0px',
+        threshold: 0.05,
+      }
+    );
+
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, []);
+
+  // Control playback based on visibility & reduced motion
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -58,16 +85,20 @@ export function BackgroundVideo({
       return;
     }
 
-    const playPromise = video.play();
-    if (playPromise !== undefined) {
-      playPromise
-        .then(() => setIsReady(true))
-        .catch(() => {
-          // Autoplay was prevented or postponed
-          setIsReady(false);
-        });
+    if (isInView) {
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => setIsReady(true))
+          .catch(() => {
+            // Autoplay postponed or muted policy handling
+          });
+      }
+    } else {
+      // Offscreen: immediately pause to free hardware decoders
+      video.pause();
     }
-  }, [src, prefersReducedMotion]);
+  }, [isInView, src, prefersReducedMotion]);
 
   const blurClass = typeof blur === 'string' 
     ? blur 
@@ -81,26 +112,39 @@ export function BackgroundVideo({
 
   return (
     <div 
+      ref={containerRef}
       className={`absolute inset-0 overflow-hidden pointer-events-none select-none z-0 ${className}`}
       aria-hidden="true"
     >
-      {/* Cinematic High-Visibility Video Element */}
+      {/* Sleek ambient shimmering placeholder while video buffers */}
+      <div 
+        className={`absolute inset-0 transition-opacity duration-700 pointer-events-none ${
+          isReady ? 'opacity-0' : 'opacity-100'
+        } ${
+          isDark 
+            ? 'bg-gradient-to-br from-[#0B0E14] via-[#111622] to-[#0B0E14]' 
+            : 'bg-gradient-to-br from-[#F7F5F0] via-[#EAE6DE] to-[#F7F5F0]'
+        }`}
+      />
+
+      {/* Cinematic High-Performance Video Element */}
       <video
         ref={videoRef}
-        autoPlay
         loop
         muted
         playsInline
-        preload="auto"
+        preload={priority ? 'metadata' : 'none'}
         poster={poster}
         onLoadedData={() => setIsReady(true)}
+        onCanPlay={() => setIsReady(true)}
         style={{
           ...blendStyle,
           opacity: isReady ? opacity : 0,
         }}
-        className={`absolute inset-0 h-full w-full object-cover object-center transition-all duration-1000 ease-out will-change-transform scale-100 group-hover:scale-105 filter contrast-[1.08] brightness-[1.04] ${blurClass}`}
+        className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-700 ease-out will-change-transform filter contrast-[1.06] brightness-[1.03] ${blurClass}`}
       >
-        <source src={src} type="video/mp4" />
+        {/* Only load source when in view or priority to prevent network congestion */}
+        {(isInView || priority) && <source src={src} type="video/mp4" />}
       </video>
 
       {/* 

@@ -6,8 +6,8 @@ import { AudioPlayer } from '@/components/ui/AudioPlayer';
 
 export function ViewportHUD() {
   return (
-    <div className="border-b border-white/5 bg-[#07080A]/80 backdrop-blur-md px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
+    <div className="border-b border-white/5 bg-[#07080A]/80 backdrop-blur-md px-3 py-1.5 sm:px-4 sm:py-2 font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.16em] sm:tracking-[0.2em] text-white/50 overflow-hidden">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 sm:gap-4">
         {/* Left: Viewport Status */}
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1.5 text-accent-glow">

@@ -20,22 +20,21 @@ export function AnimatedHeading({
     <motion.span
       initial="hidden"
       animate="visible"
-      transition={{ staggerChildren: 0.05, delayChildren: delay }}
+      transition={{ staggerChildren: 0.04, delayChildren: delay }}
       className={`inline-flex flex-wrap gap-x-[0.28em] ${className}`}
     >
       {words.map((word, i) => (
         <motion.span
           key={i}
           variants={{
-            hidden: { opacity: 0, y: 28, filter: 'blur(4px)' },
+            hidden: { opacity: 0, y: 18 },
             visible: {
               opacity: 1,
               y: 0,
-              filter: 'blur(0px)',
-              transition: { duration: 0.75, ease: smoothEase },
+              transition: { duration: 0.55, ease: smoothEase },
             },
           }}
-          className="inline-block"
+          className="inline-block will-change-transform"
         >
           {word}
         </motion.span>
@@ -55,10 +54,10 @@ export function FadeInUp({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24, filter: 'blur(4px)' }}
-      animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-      transition={{ duration: 0.8, delay, ease: smoothEase }}
-      className={className}
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.55, delay, ease: smoothEase }}
+      className={`${className} will-change-transform`}
     >
       {children}
     </motion.div>
@@ -76,11 +75,11 @@ export function ScrollReveal({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 32 }}
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-50px' }}
-      transition={{ duration: 0.8, delay, ease: smoothEase }}
-      className={className}
+      viewport={{ once: true, margin: '-30px' }}
+      transition={{ duration: 0.6, delay, ease: smoothEase }}
+      className={`${className} will-change-transform`}
     >
       {children}
     </motion.div>

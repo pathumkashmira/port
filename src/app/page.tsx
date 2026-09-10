@@ -57,48 +57,49 @@ export default function HomePage() {
     switch (section.type) {
       case 'hero':
         return (
-          <section key={section.id} id="hero" className="relative min-h-[95vh] lg:min-h-screen w-full overflow-hidden flex flex-col justify-end px-5 pb-16 pt-24 sm:px-10 md:pb-24 border-b border-stone-300/80 dark:border-white/10">
-            {/* Clearly Visible 3D Product & Motion Camera Reel (Configurable from Admin) */}
+          <section key={section.id} id="hero" className="relative min-h-[92dvh] sm:min-h-[95dvh] lg:min-h-screen w-full overflow-hidden flex flex-col justify-end px-4 pb-12 pt-20 sm:px-8 md:pb-20 lg:px-12 border-b border-stone-300/80 dark:border-white/10">
+            {/* Clearly Visible 3D Product & Motion Camera Reel with Priority Fast Load */}
             <BackgroundVideo
               src={heroVideoSrc}
               opacity={0.92}
+              priority={true}
             />
 
             {/* Ambient Subtle Fine Grid */}
             <div className="viewport-grid absolute inset-0 opacity-15 pointer-events-none" />
 
             {/* Targeted bottom text scrim */}
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-80 bg-gradient-to-t from-[#080B10]/90 via-[#080B10]/45 to-transparent" />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-80 bg-gradient-to-t from-[#080B10]/95 via-[#080B10]/50 to-transparent" />
 
             {/* Ambient Glows Matched to Video Color Palette */}
-            <div className="pointer-events-none absolute bottom-20 left-10 w-96 h-96 bg-[#00F2FE]/15 blur-[120px] rounded-full" />
-            <div className="pointer-events-none absolute bottom-10 right-10 w-96 h-96 bg-[#D4AF37]/15 blur-[120px] rounded-full" />
+            <div className="pointer-events-none absolute bottom-20 left-10 w-96 h-96 bg-[#00F2FE]/15 blur-[120px] rounded-full hidden sm:block" />
+            <div className="pointer-events-none absolute bottom-10 right-10 w-96 h-96 bg-[#D4AF37]/15 blur-[120px] rounded-full hidden sm:block" />
 
             {/* Hero Content Container */}
             <div className="relative z-10 mx-auto w-full max-w-7xl">
               {/* Tactical Studio & Dual Brand Seal (FIVERR + ORVEX) */}
-              <FadeInUp delay={0.1}>
-                <div className="inline-flex flex-wrap items-center gap-2.5 border border-[#00F2FE]/40 bg-[#00F2FE]/10 px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.24em] text-[#38BDF8] backdrop-blur-md mb-6 shadow-[0_0_20px_rgba(0,242,254,0.15)]">
+              <FadeInUp delay={0.05}>
+                <div className="inline-flex flex-wrap items-center gap-2 border border-[#00F2FE]/40 bg-[#00F2FE]/10 px-3 py-1 sm:px-4 sm:py-1.5 font-mono text-[9px] sm:text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.24em] text-[#38BDF8] backdrop-blur-md mb-4 sm:mb-6 shadow-[0_0_20px_rgba(0,242,254,0.15)]">
                   <span className="h-2 w-2 rounded-full bg-[#00F2FE] animate-ping" />
                   <span className="text-emerald-400 font-bold">FIVERR TOP RATED</span>
                   <span>·</span>
                   <span className="text-gold font-bold">ORVEX CREATIVE STUDIO</span>
-                  <span>·</span>
-                  <span>3D PRODUCT ANIMATION &amp; CGI</span>
+                  <span className="hidden xs:inline">·</span>
+                  <span className="hidden xs:inline">3D PRODUCT ANIMATION &amp; CGI</span>
                 </div>
               </FadeInUp>
 
               {/* Oversized Custom Display Typography */}
-              <h1 className="font-display text-[11vw] sm:text-[8.5vw] lg:text-[6.8rem] leading-[0.88] font-black uppercase tracking-tight text-white select-none drop-shadow-[0_4px_30px_rgba(0,0,0,0.8)]">
-                <FadeInUp delay={0.2} className="block">
+              <h1 className="font-display text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-[6.2rem] leading-[1.0] sm:leading-[0.9] font-black uppercase tracking-tight text-white select-none drop-shadow-[0_4px_30px_rgba(0,0,0,0.8)]">
+                <FadeInUp delay={0.1} className="block">
                   <span className="bg-gradient-to-r from-[#00F2FE] via-[#38BDF8] to-[#93C5FD] bg-clip-text text-transparent drop-shadow-[0_0_40px_rgba(0,242,254,0.3)]">
                     Realistic 3D
                   </span>
                 </FadeInUp>
-                <FadeInUp delay={0.35} className="block">
+                <FadeInUp delay={0.2} className="block">
                   <span className="text-white">Product Animation</span>
                 </FadeInUp>
-                <FadeInUp delay={0.5} className="block">
+                <FadeInUp delay={0.3} className="block">
                   <span className="bg-gradient-to-r from-[#FDE68A] via-[#D4AF37] to-[#F59E0B] bg-clip-text text-transparent drop-shadow-[0_0_40px_rgba(212,175,55,0.35)]">
                     &amp; CGI in Blender
                   </span>
@@ -106,19 +107,19 @@ export default function HomePage() {
               </h1>
 
               {/* Sub-text & Action Row */}
-              <FadeInUp delay={0.65}>
-                <div className="mt-8 grid gap-8 border-t border-white/20 pt-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-                  <p className="max-w-2xl text-sm sm:text-base leading-relaxed text-slate-200 drop-shadow-md">
+              <FadeInUp delay={0.4}>
+                <div className="mt-6 sm:mt-8 grid gap-6 sm:gap-8 border-t border-white/20 pt-6 sm:pt-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+                  <p className="max-w-2xl text-xs sm:text-base leading-relaxed text-slate-200 drop-shadow-md">
                     <strong className="text-[#38BDF8] font-semibold">Pathum Kashmira</strong> — Commercial 3D product animations, cinematic camera sweeps, photorealistic materials, and hard-surface modeling in Blender Cycles. Available for hire directly on <strong className="text-emerald-400 font-semibold underline decoration-emerald-500/50">Fiverr</strong> and through <strong className="text-gold font-semibold">ORVEX Creative Studio</strong>.
                   </p>
 
-                  <div className="flex flex-wrap items-center gap-4">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full lg:w-auto">
                     <a
                       href="https://www.fiverr.com/s/jyvxXgv"
                       target="_blank"
                       rel="noreferrer noopener"
                       data-cursor="ORDER"
-                      className="group inline-flex items-center gap-3 bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-500 hover:from-emerald-500 hover:to-amber-400 px-7 py-4 font-mono text-xs uppercase tracking-[0.22em] text-white font-bold transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_35px_rgba(16,185,129,0.5)]"
+                      className="group inline-flex items-center justify-center gap-3 bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-500 hover:from-emerald-500 hover:to-amber-400 px-6 py-3.5 sm:px-7 sm:py-4 font-mono text-xs uppercase tracking-[0.2em] text-white font-bold transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_0_35px_rgba(16,185,129,0.5)]"
                     >
                       <Sparkles className="h-4 w-4 fill-current transition-transform group-hover:rotate-12 text-gold" />
                       <span>Order On Fiverr ($100+)</span>
@@ -128,7 +129,7 @@ export default function HomePage() {
                     <Link
                       href="/work"
                       data-cursor="GALLERY"
-                      className="group inline-flex items-center gap-3 border border-[#38BDF8]/40 bg-[#080B10]/80 backdrop-blur-md px-6 py-4 font-mono text-xs uppercase tracking-[0.2em] text-[#38BDF8] transition-all hover:border-[#00F2FE] hover:bg-[#00F2FE]/10 hover:shadow-[0_0_25px_rgba(0,242,254,0.3)]"
+                      className="group inline-flex items-center justify-center gap-3 border border-[#38BDF8]/40 bg-[#080B10]/80 backdrop-blur-md px-5 py-3.5 sm:px-6 sm:py-4 font-mono text-xs uppercase tracking-[0.2em] text-[#38BDF8] transition-all hover:border-[#00F2FE] hover:bg-[#00F2FE]/10 hover:shadow-[0_0_25px_rgba(0,242,254,0.3)]"
                     >
                       <span>Explore Gallery</span>
                       <ArrowDownRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:translate-y-0.5" />
@@ -137,7 +138,7 @@ export default function HomePage() {
                     <Link
                       href="/fiverr"
                       data-cursor="SERVICES"
-                      className="inline-flex items-center gap-2 border border-white/20 bg-black/40 backdrop-blur-md px-4 py-4 font-mono text-xs uppercase tracking-[0.2em] text-slate-300 hover:text-white hover:border-white/40 transition-colors"
+                      className="inline-flex items-center justify-center gap-2 border border-white/20 bg-black/40 backdrop-blur-md px-4 py-3.5 sm:py-4 font-mono text-xs uppercase tracking-[0.2em] text-slate-300 hover:text-white hover:border-white/40 transition-colors"
                     >
                       <span>Fiverr Hub</span>
                     </Link>

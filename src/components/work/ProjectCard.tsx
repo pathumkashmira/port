@@ -15,7 +15,37 @@ interface ProjectCardProps {
 export function ProjectCard({ project, layoutVariant = 'standard', previewMode = 'hover-video' }: ProjectCardProps) {
   const [showWireframe, setShowWireframe] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [isInView, setIsInView] = useState(false);
+  const cardRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const continuousVideoRef = useRef<HTMLVideoElement>(null);
+
+  React.useEffect(() => {
+    const el = cardRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') {
+      setIsInView(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          setIsInView(entry.isIntersecting);
+          if (continuousVideoRef.current) {
+            if (entry.isIntersecting) {
+              continuousVideoRef.current.play().catch(() => {});
+            } else {
+              continuousVideoRef.current.pause();
+            }
+          }
+        });
+      },
+      { rootMargin: '100px 0px', threshold: 0.05 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const toggleWireframe = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -67,6 +97,7 @@ export function ProjectCard({ project, layoutVariant = 'standard', previewMode =
 
   return (
     <article
+      ref={cardRef}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className="group relative overflow-hidden border border-stone-300/80 dark:border-white/10 bg-[#F7F5F0]/90 dark:bg-slate-900/80 backdrop-blur-md transition-all duration-500 hover:border-gold/60 hover:shadow-[0_12px_36px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_12px_36px_rgba(0,0,0,0.45)] cad-corner-tl cad-corner-br"
@@ -106,14 +137,15 @@ export function ProjectCard({ project, layoutVariant = 'standard', previewMode =
           {/* Continuous Video Mode */}
           {isContinuousVideo && (
             <video
-              src={project.videoUrl}
-              autoPlay
+              ref={continuousVideoRef}
               loop
               muted
               playsInline
-              preload="auto"
+              preload="metadata"
               className="absolute inset-0 h-full w-full object-cover filter contrast-[1.08] brightness-[1.04]"
-            />
+            >
+              {isInView && <source src={project.videoUrl} type="video/mp4" />}
+            </video>
           )}
 
           {/* Hover Video Motion Preview */}

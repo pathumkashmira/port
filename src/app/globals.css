@@ -42,24 +42,16 @@ html.light {
   box-sizing: border-box;
 }
 
-/* Global Smooth Theme Transition */
-html,
-body,
-header,
-nav,
-footer,
-section,
-article,
-div.glass-panel,
-div.glass-panel-glow,
+/* Targeted Transitions for Interactive & Theme Elements (High 60fps Performance) */
 button,
 a,
 input,
 select,
-textarea {
-  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+textarea,
+.theme-transition {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow, opacity;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 400ms;
+  transition-duration: 250ms;
 }
 
 html {
@@ -67,13 +59,20 @@ html {
   color: var(--text-primary);
   font-family: var(--font-inter);
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  max-width: 100vw;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   overflow-x: hidden;
+  max-width: 100vw;
   background: var(--bg-primary);
   min-height: 100vh;
+  min-height: 100dvh;
   color: var(--text-primary);
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
 }
 
 ::selection {

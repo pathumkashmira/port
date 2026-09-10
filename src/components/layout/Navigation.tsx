@@ -167,12 +167,12 @@ export function Navigation() {
 
       {/* Cinematic Full-Screen Mobile Menu Drawer */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 top-[49px] z-40 flex flex-col justify-between bg-[#F7F5F0]/98 dark:bg-[#0B0E14]/98 backdrop-blur-2xl p-6 lg:hidden animate-in fade-in duration-300">
-          <div className="viewport-grid absolute inset-0 opacity-20 pointer-events-none" />
+        <div className="fixed inset-x-0 bottom-0 top-[65px] z-50 flex flex-col justify-between overflow-y-auto bg-[#F7F5F0]/98 dark:bg-[#0B0E14]/98 backdrop-blur-2xl p-5 sm:p-6 lg:hidden animate-in fade-in duration-200">
+          <div className="viewport-grid absolute inset-0 opacity-15 pointer-events-none" />
 
-          <div className="relative z-10 mt-4 flex flex-col space-y-3">
-            <div className="flex items-center justify-between border-b border-stone-200 dark:border-white/10 pb-2">
-              <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-gold/80">
+          <div className="relative z-10 mt-2 flex flex-col space-y-2 sm:space-y-3">
+            <div className="flex items-center justify-between border-b border-stone-200 dark:border-white/10 pb-2.5">
+              <span className="font-mono text-[10px] uppercase tracking-[0.26em] text-gold/90 font-bold">
                 Navigation Manifest
               </span>
               <ThemeToggle showLabel />
@@ -185,7 +185,7 @@ export function Navigation() {
                   href={link.href}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="flex items-center justify-between border-b border-stone-200/60 dark:border-white/5 py-3 font-display text-2xl uppercase tracking-wider text-stone-800 dark:text-slate-200 hover:text-gold"
+                  className="flex items-center justify-between border-b border-stone-200/60 dark:border-white/5 py-2.5 font-display text-lg sm:text-2xl uppercase tracking-wider text-stone-800 dark:text-slate-200 hover:text-gold"
                 >
                   <span>{link.label}</span>
                   <span className="font-mono text-xs text-gold flex items-center gap-1">
@@ -196,7 +196,7 @@ export function Navigation() {
                 <Link
                   key={link.label}
                   href={link.href}
-                  className={`flex items-center justify-between border-b border-stone-200/60 dark:border-white/5 py-3 font-display text-2xl uppercase tracking-wider transition-colors ${
+                  className={`flex items-center justify-between border-b border-stone-200/60 dark:border-white/5 py-2.5 font-display text-lg sm:text-2xl uppercase tracking-wider transition-colors ${
                     isActive ? 'text-accent-glow pl-2 border-accent-glow/40' : 'text-stone-800 dark:text-slate-200 hover:text-gold'
                   }`}
                 >
@@ -209,16 +209,16 @@ export function Navigation() {
             })}
           </div>
 
-          <div className="relative z-10 border-t border-stone-200 dark:border-white/10 pt-4">
-            <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-stone-500 dark:text-slate-400">
+          <div className="relative z-10 border-t border-stone-200 dark:border-white/10 pt-4 mt-6">
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-stone-500 dark:text-slate-400">
               Pethum Kashmira · Digital Creator &amp; 3D Artist
             </p>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-gold mt-1">
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-gold mt-0.5">
               ORVEX Creative Studio · Filxy Store
             </p>
             <Link
               href="/contact"
-              className="mt-4 flex w-full items-center justify-center gap-2 bg-gold px-6 py-3 font-mono text-[11px] uppercase tracking-[0.22em] text-[#0B0E14] font-bold"
+              className="mt-3 flex w-full items-center justify-center gap-2 bg-gold px-5 py-3 font-mono text-xs uppercase tracking-[0.2em] text-[#0B0E14] font-bold shadow-lg"
             >
               Start A Commission Brief →
             </Link>

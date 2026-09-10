@@ -13,7 +13,8 @@ import {
   VideoAsset, 
   PageVideos,
   PageSection,
-  ManagedPage
+  ManagedPage,
+  WorkPreviewMode
 } from '@/types';
 import { INITIAL_PROJECTS } from '@/data/projects';
 import { INITIAL_ARTICLES } from '@/data/articles';
@@ -202,6 +203,72 @@ export function useStudioStore() {
     updateSettings({
       ...settings,
       selectedWork,
+    });
+  };
+
+  const addProjectToSelectedWork = (projectId: string, mode?: WorkPreviewMode) => {
+    const current = settings.selectedWork?.itemIds || [];
+    if (current.includes(projectId)) return;
+    const updatedIds = [projectId, ...current];
+    const previewModes = { ...(settings.selectedWork?.itemPreviewModes || {}) };
+    if (mode) previewModes[projectId] = mode;
+    updateSettings({
+      ...settings,
+      selectedWork: {
+        ...(settings.selectedWork || DEFAULT_SELECTED_WORK),
+        itemIds: updatedIds,
+        itemPreviewModes: previewModes,
+      },
+    });
+  };
+
+  const removeProjectFromSelectedWork = (projectId: string) => {
+    const current = settings.selectedWork?.itemIds || [];
+    const updatedIds = current.filter((id) => id !== projectId);
+    const previewModes = { ...(settings.selectedWork?.itemPreviewModes || {}) };
+    delete previewModes[projectId];
+    updateSettings({
+      ...settings,
+      selectedWork: {
+        ...(settings.selectedWork || DEFAULT_SELECTED_WORK),
+        itemIds: updatedIds,
+        itemPreviewModes: previewModes,
+      },
+    });
+  };
+
+  const reorderSelectedWork = (projectId: string, direction: 'up' | 'down') => {
+    const current = [...(settings.selectedWork?.itemIds || [])];
+    const index = current.indexOf(projectId);
+    if (index === -1) return;
+    if (direction === 'up' && index > 0) {
+      const temp = current[index - 1];
+      current[index - 1] = current[index];
+      current[index] = temp;
+    } else if (direction === 'down' && index < current.length - 1) {
+      const temp = current[index + 1];
+      current[index + 1] = current[index];
+      current[index] = temp;
+    }
+    updateSettings({
+      ...settings,
+      selectedWork: {
+        ...(settings.selectedWork || DEFAULT_SELECTED_WORK),
+        itemIds: current,
+      },
+    });
+  };
+
+  const setProjectPreviewMode = (projectId: string, mode: WorkPreviewMode) => {
+    updateSettings({
+      ...settings,
+      selectedWork: {
+        ...(settings.selectedWork || DEFAULT_SELECTED_WORK),
+        itemPreviewModes: {
+          ...(settings.selectedWork?.itemPreviewModes || {}),
+          [projectId]: mode,
+        },
+      },
     });
   };
 
@@ -456,6 +523,10 @@ export function useStudioStore() {
     addCustomVideo,
     deleteCustomVideo,
     updateSelectedWork,
+    addProjectToSelectedWork,
+    removeProjectFromSelectedWork,
+    reorderSelectedWork,
+    setProjectPreviewMode,
     updateThemeColors,
     updateSecuritySettings,
     addCustomPage,

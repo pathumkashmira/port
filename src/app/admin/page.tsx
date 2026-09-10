@@ -97,6 +97,10 @@ export default function AdminPage() {
     addCustomVideo,
     deleteCustomVideo,
     updateSelectedWork,
+    addProjectToSelectedWork,
+    removeProjectFromSelectedWork,
+    reorderSelectedWork,
+    setProjectPreviewMode,
     updateThemeColors,
     updateSecuritySettings,
     addCustomPage,
@@ -165,6 +169,28 @@ export default function AdminPage() {
       setSelectedWorkForm(settings.selectedWork);
     }
   }, [settings.selectedWork]);
+
+  // Selected Works Management states (Add, Edit, Remove, Reorder)
+  const [editingSelectedProject, setEditingSelectedProject] = useState<Project | null>(null);
+  const [showAddSelectedModal, setShowAddSelectedModal] = useState(false);
+  const [quickAddProjectId, setQuickAddProjectId] = useState('');
+  const [newSelectedProject, setNewSelectedProject] = useState<Partial<Project>>({
+    title: '',
+    category: 'Hard Surface',
+    year: '2026',
+    client: 'ORVEX Studio Showcase',
+    heroImage: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&auto=format&fit=crop',
+    videoUrl: '/videos/orvex-reel.mp4',
+    description: '',
+    technicalSpecs: {
+      vertices: '128,400',
+      faces: '124,100 Quads',
+      renderEngine: 'Cycles',
+      renderSamples: '2048 (OptiX Denoiser)',
+      textureResolution: '4K PBR UDIM',
+      geometryType: 'Subdivision Quad',
+    },
+  });
 
   // Theme Colors Form State
   const [themeColorsForm, setThemeColorsForm] = useState<ThemeColorsConfig>(
@@ -1163,184 +1189,675 @@ export default function AdminPage() {
               </div>
             </div>
 
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                updateSelectedWork(selectedWorkForm);
-                flashNotice('Selected Works settings saved live!');
-              }}
-              className="border border-white/15 bg-[#0B0D14] p-8 space-y-8"
-            >
-              {/* Global Preview Mode Setting */}
-              <div className="border-b border-white/10 pb-6 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-display text-base font-bold uppercase text-white">
-                    Global Preview Mode for Selected Works
+            {/* TOP ACTION & QUICK ADD BAR */}
+            <div className="border border-white/15 bg-[#0B0D14] p-6 space-y-6">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
+                <div>
+                  <h4 className="font-display text-base font-bold uppercase text-white flex items-center gap-2">
+                    <span>Active Selected Works Sequence</span>
+                    <span className="bg-emerald-500/20 text-emerald-400 text-[10px] font-mono px-2 py-0.5 border border-emerald-500/40 rounded">
+                      {selectedWorkForm.itemIds?.length || 0} Items Displayed
+                    </span>
                   </h4>
-                  <span className="font-mono text-xs text-gold uppercase">Configured</span>
+                  <p className="font-mono text-xs text-white/50 mt-1">
+                    Arrange the exact order, edit content, and assign preview styles for works shown on the live Homepage.
+                  </p>
                 </div>
 
-                <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {[
-                    {
-                      id: 'hover-video' as WorkPreviewMode,
-                      title: 'Hover-Video (Recommended)',
-                      desc: 'Shows high-res render image by default; plays motion video loop smoothly when cursor hovers.',
-                    },
-                    {
-                      id: 'video' as WorkPreviewMode,
-                      title: 'Continuous Autoplay Video',
-                      desc: 'Autoplays video reels continuously without needing user hover.',
-                    },
-                    {
-                      id: 'image' as WorkPreviewMode,
-                      title: 'High-Res Image Only',
-                      desc: 'Displays the static hero render without video streaming on the cards.',
-                    },
-                    {
-                      id: 'none' as WorkPreviewMode,
-                      title: 'Minimal / No Media',
-                      desc: 'Clean editorial typographic cards showing project titles, specs, and case study links.',
-                    },
-                  ].map((mode) => {
-                    const isSelected = selectedWorkForm.previewMode === mode.id;
-                    return (
-                      <div
-                        key={mode.id}
-                        onClick={() => setSelectedWorkForm({ ...selectedWorkForm, previewMode: mode.id })}
-                        className={`border p-4 space-y-2 cursor-pointer transition-all ${
-                          isSelected
-                            ? 'border-gold bg-gold/15 text-white shadow-[0_0_20px_rgba(212,175,55,0.25)]'
-                            : 'border-white/10 bg-[#07090F] text-slate-300 hover:border-white/30'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="font-display text-sm font-bold uppercase">{mode.title}</span>
-                          {isSelected && <Check className="h-4 w-4 text-gold" />}
-                        </div>
-                        <p className="font-mono text-[10px] text-white/50 leading-relaxed">{mode.desc}</p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Headline Customizer */}
-              <div className="grid sm:grid-cols-2 gap-4 border-b border-white/10 pb-6">
-                <div className="space-y-1">
-                  <label className="font-mono text-[10px] uppercase text-white/60 block">Section Headline</label>
-                  <input
-                    type="text"
-                    value={selectedWorkForm.headline || ''}
-                    onChange={(e) => setSelectedWorkForm({ ...selectedWorkForm, headline: e.target.value })}
-                    placeholder="Selected 3D Works"
-                    className="w-full border border-white/15 bg-[#07080A] p-2.5 font-mono text-xs text-white focus:border-gold outline-hidden"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="font-mono text-[10px] uppercase text-white/60 block">Section Subheadline</label>
-                  <input
-                    type="text"
-                    value={selectedWorkForm.subheadline || ''}
-                    onChange={(e) => setSelectedWorkForm({ ...selectedWorkForm, subheadline: e.target.value })}
-                    placeholder="Hard-surface assets, commercial product animations..."
-                    className="w-full border border-white/15 bg-[#07080A] p-2.5 font-mono text-xs text-white focus:border-gold outline-hidden"
-                  />
-                </div>
-              </div>
-
-              {/* Project Selection & Per-Item Preview Mode Matrix */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs uppercase tracking-wider text-white/70">
-                    Curate Projects in Selected Works ({selectedWorkForm.itemIds?.length || 0} selected)
-                  </span>
+                <div className="flex flex-wrap items-center gap-3">
                   <button
                     type="button"
-                    onClick={() => setSelectedWorkForm({ ...selectedWorkForm, itemIds: projects.map((p) => p.id) })}
-                    className="text-xs font-mono text-gold underline cursor-pointer"
+                    onClick={() => setShowAddSelectedModal(!showAddSelectedModal)}
+                    className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white px-4 py-2.5 font-mono text-xs uppercase tracking-wider font-bold transition-all shadow-md cursor-pointer"
                   >
-                    Select All ({projects.length})
+                    <Plus className="h-4 w-4" />
+                    <span>{showAddSelectedModal ? 'Close Creator' : 'Create New Selected Work'}</span>
                   </button>
-                </div>
 
-                <div className="divide-y divide-white/5 border border-white/10 bg-[#07090F]">
-                  {projects.map((p, idx) => {
-                    const isChecked = selectedWorkForm.itemIds?.includes(p.id);
-                    const itemMode = selectedWorkForm.itemPreviewModes?.[p.id] || selectedWorkForm.previewMode;
-
-                    return (
-                      <div key={p.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-white/5">
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={(e) => {
-                              const current = selectedWorkForm.itemIds || [];
-                              const updated = e.target.checked
-                                ? [...current, p.id]
-                                : current.filter((id) => id !== p.id);
-                              setSelectedWorkForm({ ...selectedWorkForm, itemIds: updated });
-                            }}
-                            className="h-4 w-4 accent-gold"
-                          />
-                          <div className="relative h-10 w-16 bg-black rounded overflow-hidden shrink-0 border border-white/10">
-                            <Image src={p.heroImage} alt={p.title} fill className="object-cover" />
-                          </div>
-                          <div>
-                            <h5 className="font-display text-sm font-bold uppercase text-white">{p.title}</h5>
-                            <span className="font-mono text-[10px] text-white/40">{p.category} · {p.year}</span>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-4">
-                          {p.videoUrl ? (
-                            <span className="font-mono text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 border border-emerald-500/30">
-                              🎬 Video Reel Attached
-                            </span>
-                          ) : (
-                            <span className="font-mono text-[10px] text-white/40">
-                              Image Only
-                            </span>
-                          )}
-
-                          <div className="flex items-center gap-2">
-                            <label className="font-mono text-[9px] uppercase text-white/40">Preview:</label>
-                            <select
-                              value={itemMode}
-                              onChange={(e) => {
-                                const val = e.target.value as WorkPreviewMode;
-                                setSelectedWorkForm({
-                                  ...selectedWorkForm,
-                                  itemPreviewModes: {
-                                    ...(selectedWorkForm.itemPreviewModes || {}),
-                                    [p.id]: val,
-                                  },
-                                });
-                              }}
-                              className="border border-white/20 bg-[#0B0D14] p-1.5 font-mono text-[10px] text-white focus:border-gold outline-hidden"
-                            >
-                              <option value="hover-video">Hover Video</option>
-                              <option value="video">Autoplay Video</option>
-                              <option value="image">Image Only</option>
-                              <option value="none">No Preview (Minimal)</option>
-                            </select>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      updateSelectedWork(selectedWorkForm);
+                      flashNotice('Selected Works saved to live website!');
+                    }}
+                    className="inline-flex items-center gap-2 bg-gold px-5 py-2.5 font-mono text-xs uppercase tracking-wider text-[#07080A] font-bold hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] transition-all cursor-pointer"
+                  >
+                    <Save className="h-4 w-4" />
+                    <span>Save Live Layout</span>
+                  </button>
                 </div>
               </div>
 
-              <button
-                type="submit"
-                className="inline-flex items-center gap-2 bg-gold px-8 py-3.5 font-mono text-xs uppercase tracking-wider text-[#07080A] font-bold hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] transition-all cursor-pointer"
-              >
-                <Save className="h-4 w-4" />
-                <span>Save Selected Works &amp; Preview Modes</span>
-              </button>
-            </form>
+              {/* QUICK ADD EXISTING PROJECT DROPDOWN */}
+              {(() => {
+                const curatedIds = selectedWorkForm.itemIds || [];
+                const availableProjects = projects.filter((p) => !curatedIds.includes(p.id));
+
+                return (
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-[#07090F] p-4 border border-white/10">
+                    <span className="font-mono text-xs text-white/70 uppercase tracking-wider shrink-0 flex items-center gap-1.5">
+                      <Plus className="h-3.5 w-3.5 text-gold" />
+                      Add Existing Project to Homepage:
+                    </span>
+                    <select
+                      value={quickAddProjectId}
+                      onChange={(e) => setQuickAddProjectId(e.target.value)}
+                      className="flex-1 border border-white/20 bg-[#0B0D14] p-2 font-mono text-xs text-white focus:border-gold outline-hidden"
+                    >
+                      <option value="">-- Choose from Project Archive ({availableProjects.length} Available) --</option>
+                      {availableProjects.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.title} ({p.category} · {p.year})
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      type="button"
+                      disabled={!quickAddProjectId}
+                      onClick={() => {
+                        if (!quickAddProjectId) return;
+                        const current = selectedWorkForm.itemIds || [];
+                        const updated = [...current, quickAddProjectId];
+                        const newConfig = {
+                          ...selectedWorkForm,
+                          itemIds: updated,
+                          itemPreviewModes: {
+                            ...(selectedWorkForm.itemPreviewModes || {}),
+                            [quickAddProjectId]: selectedWorkForm.previewMode || 'hover-video',
+                          },
+                        };
+                        setSelectedWorkForm(newConfig);
+                        updateSelectedWork(newConfig);
+                        setQuickAddProjectId('');
+                        flashNotice('Project pinned to Selected Works!');
+                      }}
+                      className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-gold hover:text-black border border-white/20 px-4 py-2 font-mono text-xs uppercase tracking-wider text-white transition-colors cursor-pointer disabled:opacity-40 disabled:pointer-events-none"
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                      <span>Add Item</span>
+                    </button>
+                  </div>
+                );
+              })()}
+
+              {/* NEW PROJECT CREATOR FORM (EXPANDABLE) */}
+              {showAddSelectedModal && (
+                <div className="border border-emerald-500/40 bg-emerald-500/5 p-6 space-y-6 animate-in fade-in duration-300">
+                  <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                    <h5 className="font-display text-sm font-bold uppercase text-emerald-400 flex items-center gap-2">
+                      <Sparkles className="h-4 w-4" />
+                      <span>Create New 3D Artwork &amp; Add Directly to Selected Works</span>
+                    </h5>
+                    <button
+                      type="button"
+                      onClick={() => setShowAddSelectedModal(false)}
+                      className="text-white/40 hover:text-white"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="space-y-1">
+                      <label className="font-mono text-[10px] uppercase text-white/60 block">Project Title *</label>
+                      <input
+                        type="text"
+                        value={newSelectedProject.title || ''}
+                        onChange={(e) => setNewSelectedProject({ ...newSelectedProject, title: e.target.value })}
+                        placeholder="e.g. CYBERNETIC COIL MK-2"
+                        className="w-full border border-white/20 bg-[#07080A] p-2 font-mono text-xs text-white focus:border-gold outline-hidden"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="font-mono text-[10px] uppercase text-white/60 block">Category</label>
+                      <select
+                        value={newSelectedProject.category || 'Hard Surface'}
+                        onChange={(e) => setNewSelectedProject({ ...newSelectedProject, category: e.target.value as any })}
+                        className="w-full border border-white/20 bg-[#07080A] p-2 font-mono text-xs text-white focus:border-gold outline-hidden"
+                      >
+                        <option value="Hard Surface">Hard Surface</option>
+                        <option value="Environment Design">Environment Design</option>
+                        <option value="Game Assets">Game Assets</option>
+                        <option value="Character Sculpts">Character Sculpts</option>
+                        <option value="Abstract Art">Abstract Art</option>
+                        <option value="Visual Design">Visual Design</option>
+                      </select>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="font-mono text-[10px] uppercase text-white/60 block">Year</label>
+                      <input
+                        type="text"
+                        value={newSelectedProject.year || '2026'}
+                        onChange={(e) => setNewSelectedProject({ ...newSelectedProject, year: e.target.value })}
+                        className="w-full border border-white/20 bg-[#07080A] p-2 font-mono text-xs text-white focus:border-gold outline-hidden"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Media Inputs with Live Previews */}
+                  <div className="grid lg:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="font-mono text-[10px] uppercase text-white/60 block">Hero Image URL (Render)</label>
+                      <input
+                        type="text"
+                        value={newSelectedProject.heroImage || ''}
+                        onChange={(e) => setNewSelectedProject({ ...newSelectedProject, heroImage: e.target.value })}
+                        className="w-full border border-white/20 bg-[#07080A] p-2 font-mono text-xs text-white focus:border-gold outline-hidden"
+                      />
+                      {newSelectedProject.heroImage && (
+                        <div className="relative h-28 w-full bg-black rounded overflow-hidden border border-white/10">
+                          <Image src={newSelectedProject.heroImage} alt="Preview" fill className="object-cover" />
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="font-mono text-[10px] uppercase text-white/60 block">Video Reel URL (Motion Sweep)</label>
+                      <input
+                        type="text"
+                        value={newSelectedProject.videoUrl || ''}
+                        onChange={(e) => setNewSelectedProject({ ...newSelectedProject, videoUrl: e.target.value })}
+                        placeholder="/videos/orvex-reel.mp4 or CDN URL"
+                        className="w-full border border-white/20 bg-[#07080A] p-2 font-mono text-xs text-white focus:border-gold outline-hidden"
+                      />
+                      {newSelectedProject.videoUrl && (
+                        <div className="relative h-28 w-full bg-black rounded overflow-hidden border border-white/10">
+                          <video src={newSelectedProject.videoUrl} autoPlay loop muted playsInline className="h-full w-full object-cover" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="font-mono text-[10px] uppercase text-white/60 block">Description</label>
+                    <textarea
+                      rows={2}
+                      value={newSelectedProject.description || ''}
+                      onChange={(e) => setNewSelectedProject({ ...newSelectedProject, description: e.target.value })}
+                      placeholder="Brief overview of the 3D model, topology, and visual storytelling..."
+                      className="w-full border border-white/20 bg-[#07080A] p-2 font-mono text-xs text-white focus:border-gold outline-hidden"
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!newSelectedProject.title) {
+                        alert('Please provide a title for the project.');
+                        return;
+                      }
+                      const slug = newSelectedProject.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+                      const projectItem: Project = {
+                        id: slug || `project-${Date.now()}`,
+                        slug: slug || `project-${Date.now()}`,
+                        title: newSelectedProject.title,
+                        subtitle: newSelectedProject.subtitle || 'Blender Cycles Showcase',
+                        category: newSelectedProject.category as any || 'Hard Surface',
+                        heroImage: newSelectedProject.heroImage || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&auto=format&fit=crop',
+                        videoUrl: newSelectedProject.videoUrl,
+                        client: newSelectedProject.client || 'ORVEX Studio Showcase',
+                        year: newSelectedProject.year || '2026',
+                        role: '3D Artist',
+                        featured: true,
+                        viewCount: 1,
+                        concept: 'Hard-surface mechanical aesthetic and design study.',
+                        process: 'Modeled in Blender 4.x, textured with 4K PBR UDIM maps, rendered in Cycles.',
+                        outcome: 'Complete Cycles render pipeline with PBR materials.',
+                        tools: ['Blender 4.x', 'Cycles', 'Substance 3D Painter'],
+                        galleryImages: [newSelectedProject.heroImage || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&auto=format&fit=crop'],
+                        technicalSpecs: {
+                          vertices: '128,400',
+                          faces: '124,100 Quads',
+                          renderEngine: 'Cycles',
+                          renderSamples: '2048',
+                          textureResolution: '4K PBR',
+                          geometryType: 'Subdivision Quad',
+                        },
+                        description: newSelectedProject.description || 'High-fidelity 3D artwork modeled in Blender.',
+                        challenge: 'Achieving photorealistic light bounce and mechanical precision.',
+                      };
+
+                      addProject(projectItem);
+                      const currentIds = selectedWorkForm.itemIds || [];
+                      const updatedIds = [projectItem.id, ...currentIds];
+                      const newConfig = {
+                        ...selectedWorkForm,
+                        itemIds: updatedIds,
+                        itemPreviewModes: {
+                          ...(selectedWorkForm.itemPreviewModes || {}),
+                          [projectItem.id]: selectedWorkForm.previewMode || 'hover-video',
+                        },
+                      };
+                      setSelectedWorkForm(newConfig);
+                      updateSelectedWork(newConfig);
+                      setShowAddSelectedModal(false);
+                      setNewSelectedProject({
+                        title: '',
+                        category: 'Hard Surface',
+                        year: '2026',
+                        client: 'ORVEX Studio Showcase',
+                        heroImage: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&auto=format&fit=crop',
+                        videoUrl: '/videos/orvex-reel.mp4',
+                        description: '',
+                      });
+                      flashNotice('New 3D artwork created and added to Selected Works!');
+                    }}
+                    className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2.5 font-mono text-xs uppercase tracking-wider font-bold cursor-pointer"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span>Create &amp; Add to Selected Works</span>
+                  </button>
+                </div>
+              )}
+
+              {/* CURATED ORDERED LIST */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                  <span className="font-mono text-xs uppercase tracking-wider text-white/80 font-bold">
+                    Homepage Showcase Sequence (Exact Live Display Order)
+                  </span>
+                  <span className="font-mono text-[10px] text-white/40">
+                    Use Up/Down arrows to change display order
+                  </span>
+                </div>
+
+                {(() => {
+                  const curatedIds = selectedWorkForm.itemIds || [];
+                  const curatedList = curatedIds
+                    .map((id) => projects.find((p) => p.id === id))
+                    .filter(Boolean) as Project[];
+
+                  if (curatedList.length === 0) {
+                    return (
+                      <div className="p-8 text-center border border-dashed border-white/15 text-white/40 font-mono text-xs">
+                        No projects currently pinned to Selected Works. Add an existing project above or create a new one.
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div className="space-y-3">
+                      {curatedList.map((project, idx) => {
+                        const itemMode = selectedWorkForm.itemPreviewModes?.[project.id] || selectedWorkForm.previewMode || 'hover-video';
+
+                        return (
+                          <div
+                            key={project.id}
+                            className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 p-4 border border-white/10 bg-[#07090F] hover:border-white/25 transition-all"
+                          >
+                            {/* Left: Position & Info */}
+                            <div className="flex items-center gap-3 min-w-0">
+                              <span className="grid h-7 w-8 place-items-center bg-gold/15 text-gold font-mono text-xs font-bold border border-gold/40 shrink-0">
+                                #{idx + 1}
+                              </span>
+
+                              <div className="relative h-12 w-20 bg-black rounded overflow-hidden shrink-0 border border-white/15">
+                                <Image src={project.heroImage} alt={project.title} fill className="object-cover" />
+                              </div>
+
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <h5 className="font-display text-sm font-bold uppercase text-white truncate">
+                                    {project.title}
+                                  </h5>
+                                  <span className="text-[10px] font-mono uppercase text-gold bg-gold/10 px-2 py-0.5 border border-gold/30 rounded shrink-0">
+                                    {project.category}
+                                  </span>
+                                </div>
+                                <p className="font-mono text-[10px] text-white/50 truncate mt-0.5">
+                                  {project.client} · {project.year} · {project.technicalSpecs?.faces || 'Quads'}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Center: Video Status & Preview Mode */}
+                            <div className="flex flex-wrap items-center gap-3">
+                              {project.videoUrl ? (
+                                <span className="inline-flex items-center gap-1 font-mono text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-1 border border-emerald-500/30">
+                                  <Film className="h-3 w-3" />
+                                  <span>Reel Linked</span>
+                                </span>
+                              ) : (
+                                <span className="font-mono text-[10px] text-white/40 bg-white/5 px-2 py-1 border border-white/10">
+                                  Image Only
+                                </span>
+                              )}
+
+                              <div className="flex items-center gap-1.5">
+                                <label className="font-mono text-[9px] uppercase text-white/40">Mode:</label>
+                                <select
+                                  value={itemMode}
+                                  onChange={(e) => {
+                                    const val = e.target.value as WorkPreviewMode;
+                                    const newConfig = {
+                                      ...selectedWorkForm,
+                                      itemPreviewModes: {
+                                        ...(selectedWorkForm.itemPreviewModes || {}),
+                                        [project.id]: val,
+                                      },
+                                    };
+                                    setSelectedWorkForm(newConfig);
+                                    updateSelectedWork(newConfig);
+                                  }}
+                                  className="border border-white/20 bg-[#0B0D14] p-1.5 font-mono text-[10px] text-white focus:border-gold outline-hidden"
+                                >
+                                  <option value="hover-video">Hover Video</option>
+                                  <option value="video">Autoplay Video</option>
+                                  <option value="image">Static Image</option>
+                                  <option value="none">Minimal (No Media)</option>
+                                </select>
+                              </div>
+                            </div>
+
+                            {/* Right: Actions (Reorder, Edit, Remove) */}
+                            <div className="flex items-center gap-2 self-end lg:self-center">
+                              {/* Reorder Up */}
+                              <button
+                                type="button"
+                                disabled={idx === 0}
+                                onClick={() => {
+                                  if (idx === 0) return;
+                                  const current = [...(selectedWorkForm.itemIds || [])];
+                                  const temp = current[idx - 1];
+                                  current[idx - 1] = current[idx];
+                                  current[idx] = temp;
+                                  const newConfig = { ...selectedWorkForm, itemIds: current };
+                                  setSelectedWorkForm(newConfig);
+                                  updateSelectedWork(newConfig);
+                                }}
+                                title="Move Up in Sequence"
+                                className="p-1.5 border border-white/20 bg-white/5 hover:bg-white/15 text-white/70 hover:text-white disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+                              >
+                                <ArrowUp className="h-3.5 w-3.5" />
+                              </button>
+
+                              {/* Reorder Down */}
+                              <button
+                                type="button"
+                                disabled={idx === curatedList.length - 1}
+                                onClick={() => {
+                                  if (idx >= curatedList.length - 1) return;
+                                  const current = [...(selectedWorkForm.itemIds || [])];
+                                  const temp = current[idx + 1];
+                                  current[idx + 1] = current[idx];
+                                  current[idx] = temp;
+                                  const newConfig = { ...selectedWorkForm, itemIds: current };
+                                  setSelectedWorkForm(newConfig);
+                                  updateSelectedWork(newConfig);
+                                }}
+                                title="Move Down in Sequence"
+                                className="p-1.5 border border-white/20 bg-white/5 hover:bg-white/15 text-white/70 hover:text-white disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
+                              >
+                                <ArrowDown className="h-3.5 w-3.5" />
+                              </button>
+
+                              {/* Edit Project */}
+                              <button
+                                type="button"
+                                onClick={() => setEditingSelectedProject(project)}
+                                title="Edit Project Artwork Details"
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 border border-gold/40 bg-gold/10 hover:bg-gold/20 text-gold font-mono text-[10px] uppercase tracking-wider cursor-pointer"
+                              >
+                                <Edit3 className="h-3.5 w-3.5" />
+                                <span>Edit</span>
+                              </button>
+
+                              {/* Remove from Selected Works */}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (!confirm(`Remove "${project.title}" from Homepage Selected Works? (The artwork remains safely in your project archive).`)) return;
+                                  const current = selectedWorkForm.itemIds || [];
+                                  const updated = current.filter((id) => id !== project.id);
+                                  const previewModes = { ...(selectedWorkForm.itemPreviewModes || {}) };
+                                  delete previewModes[project.id];
+                                  const newConfig = { ...selectedWorkForm, itemIds: updated, itemPreviewModes: previewModes };
+                                  setSelectedWorkForm(newConfig);
+                                  updateSelectedWork(newConfig);
+                                  flashNotice(`Removed "${project.title}" from Selected Works.`);
+                                }}
+                                title="Remove from Homepage"
+                                className="p-1.5 border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 text-red-400 cursor-pointer"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  );
+                })()}
+              </div>
+
+              {/* GLOBAL PREVIEW & HEADINGS CONFIG */}
+              <div className="border-t border-white/10 pt-6 space-y-6">
+                <h5 className="font-display text-sm font-bold uppercase text-white">
+                  Section Headings &amp; Global Defaults
+                </h5>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="font-mono text-[10px] uppercase text-white/60 block">Section Headline</label>
+                    <input
+                      type="text"
+                      value={selectedWorkForm.headline || ''}
+                      onChange={(e) => setSelectedWorkForm({ ...selectedWorkForm, headline: e.target.value })}
+                      placeholder="Selected 3D Works"
+                      className="w-full border border-white/15 bg-[#07080A] p-2.5 font-mono text-xs text-white focus:border-gold outline-hidden"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="font-mono text-[10px] uppercase text-white/60 block">Section Subheadline</label>
+                    <input
+                      type="text"
+                      value={selectedWorkForm.subheadline || ''}
+                      onChange={(e) => setSelectedWorkForm({ ...selectedWorkForm, subheadline: e.target.value })}
+                      placeholder="Hard-surface assets, commercial product animations..."
+                      className="w-full border border-white/15 bg-[#07080A] p-2.5 font-mono text-xs text-white focus:border-gold outline-hidden"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="font-mono text-[10px] uppercase text-white/60 block">Default Global Preview Mode</label>
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    {[
+                      { id: 'hover-video' as WorkPreviewMode, title: 'Hover-Video', desc: 'Shows image, plays reel on hover' },
+                      { id: 'video' as WorkPreviewMode, title: 'Autoplay Video', desc: 'Plays video continuously' },
+                      { id: 'image' as WorkPreviewMode, title: 'Image Only', desc: 'Static render only' },
+                      { id: 'none' as WorkPreviewMode, title: 'Minimal', desc: 'Typographic specs only' },
+                    ].map((mode) => {
+                      const isSelected = selectedWorkForm.previewMode === mode.id;
+                      return (
+                        <div
+                          key={mode.id}
+                          onClick={() => setSelectedWorkForm({ ...selectedWorkForm, previewMode: mode.id })}
+                          className={`border p-3 space-y-1 cursor-pointer transition-all ${
+                            isSelected
+                              ? 'border-gold bg-gold/15 text-white'
+                              : 'border-white/10 bg-[#07090F] text-slate-300 hover:border-white/30'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="font-display text-xs font-bold uppercase">{mode.title}</span>
+                            {isSelected && <Check className="h-3.5 w-3.5 text-gold" />}
+                          </div>
+                          <p className="font-mono text-[9px] text-white/50">{mode.desc}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    updateSelectedWork(selectedWorkForm);
+                    flashNotice('All Selected Works changes saved live!');
+                  }}
+                  className="inline-flex items-center gap-2 bg-gold px-8 py-3 font-mono text-xs uppercase tracking-wider text-[#07080A] font-bold hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] transition-all cursor-pointer"
+                >
+                  <Save className="h-4 w-4" />
+                  <span>Save Selected Works Live</span>
+                </button>
+              </div>
+            </div>
+
+            {/* EDIT SELECTED WORK MODAL */}
+            {editingSelectedProject && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
+                <div className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto border border-gold/40 bg-[#0B0D14] p-6 sm:p-8 space-y-6 shadow-[0_0_50px_rgba(0,0,0,0.8)]">
+                  <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                    <div className="flex items-center gap-2 text-gold">
+                      <Edit3 className="h-5 w-5" />
+                      <h4 className="font-display text-lg font-bold uppercase text-white">
+                        Edit Artwork: {editingSelectedProject.title}
+                      </h4>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setEditingSelectedProject(null)}
+                      className="text-white/40 hover:text-white p-1"
+                    >
+                      <X className="h-5 w-5" />
+                    </button>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="font-mono text-[10px] uppercase text-white/60 block">Title</label>
+                      <input
+                        type="text"
+                        value={editingSelectedProject.title}
+                        onChange={(e) => setEditingSelectedProject({ ...editingSelectedProject, title: e.target.value })}
+                        className="w-full border border-white/20 bg-[#07080A] p-2.5 font-mono text-xs text-white focus:border-gold outline-hidden"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="font-mono text-[10px] uppercase text-white/60 block">Category</label>
+                      <select
+                        value={editingSelectedProject.category}
+                        onChange={(e) => setEditingSelectedProject({ ...editingSelectedProject, category: e.target.value as any })}
+                        className="w-full border border-white/20 bg-[#07080A] p-2.5 font-mono text-xs text-white focus:border-gold outline-hidden"
+                      >
+                        <option value="Hard Surface">Hard Surface</option>
+                        <option value="Environment Design">Environment Design</option>
+                        <option value="Game Assets">Game Assets</option>
+                        <option value="Character Sculpts">Character Sculpts</option>
+                        <option value="Abstract Art">Abstract Art</option>
+                        <option value="Visual Design">Visual Design</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Media Links & Live Previews */}
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="font-mono text-[10px] uppercase text-white/60 block">Hero Image Render URL</label>
+                      <input
+                        type="text"
+                        value={editingSelectedProject.heroImage}
+                        onChange={(e) => setEditingSelectedProject({ ...editingSelectedProject, heroImage: e.target.value })}
+                        className="w-full border border-white/20 bg-[#07080A] p-2 font-mono text-xs text-white focus:border-gold outline-hidden"
+                      />
+                      {editingSelectedProject.heroImage && (
+                        <div className="relative h-28 w-full bg-black rounded overflow-hidden border border-white/10">
+                          <Image src={editingSelectedProject.heroImage} alt="Preview" fill className="object-cover" />
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="font-mono text-[10px] uppercase text-white/60 block">Video Reel URL</label>
+                      <input
+                        type="text"
+                        value={editingSelectedProject.videoUrl || ''}
+                        onChange={(e) => setEditingSelectedProject({ ...editingSelectedProject, videoUrl: e.target.value })}
+                        placeholder="/videos/orvex-reel.mp4 or CDN URL"
+                        className="w-full border border-white/20 bg-[#07080A] p-2 font-mono text-xs text-white focus:border-gold outline-hidden"
+                      />
+                      {editingSelectedProject.videoUrl && (
+                        <div className="relative h-28 w-full bg-black rounded overflow-hidden border border-white/10">
+                          <video src={editingSelectedProject.videoUrl} autoPlay loop muted playsInline className="h-full w-full object-cover" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="grid sm:grid-cols-3 gap-4">
+                    <div className="space-y-1">
+                      <label className="font-mono text-[10px] uppercase text-white/60 block">Year</label>
+                      <input
+                        type="text"
+                        value={editingSelectedProject.year}
+                        onChange={(e) => setEditingSelectedProject({ ...editingSelectedProject, year: e.target.value })}
+                        className="w-full border border-white/20 bg-[#07080A] p-2 font-mono text-xs text-white focus:border-gold outline-hidden"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="font-mono text-[10px] uppercase text-white/60 block">Client / Context</label>
+                      <input
+                        type="text"
+                        value={editingSelectedProject.client}
+                        onChange={(e) => setEditingSelectedProject({ ...editingSelectedProject, client: e.target.value })}
+                        className="w-full border border-white/20 bg-[#07080A] p-2 font-mono text-xs text-white focus:border-gold outline-hidden"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="font-mono text-[10px] uppercase text-white/60 block">Polygon Count</label>
+                      <input
+                        type="text"
+                        value={editingSelectedProject.technicalSpecs?.faces || ''}
+                        onChange={(e) =>
+                          setEditingSelectedProject({
+                            ...editingSelectedProject,
+                            technicalSpecs: {
+                              ...(editingSelectedProject.technicalSpecs || {} as any),
+                              faces: e.target.value,
+                            },
+                          })
+                        }
+                        placeholder="124,100 Quads"
+                        className="w-full border border-white/20 bg-[#07080A] p-2 font-mono text-xs text-white focus:border-gold outline-hidden"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="font-mono text-[10px] uppercase text-white/60 block">Description</label>
+                    <textarea
+                      rows={3}
+                      value={editingSelectedProject.description}
+                      onChange={(e) => setEditingSelectedProject({ ...editingSelectedProject, description: e.target.value })}
+                      className="w-full border border-white/20 bg-[#07080A] p-2 font-mono text-xs text-white focus:border-gold outline-hidden"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
+                    <button
+                      type="button"
+                      onClick={() => setEditingSelectedProject(null)}
+                      className="px-4 py-2 font-mono text-xs uppercase tracking-wider text-white/70 hover:text-white border border-white/15 cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        editProject(editingSelectedProject);
+                        setEditingSelectedProject(null);
+                        flashNotice(`Updated "${editingSelectedProject.title}" live!`);
+                      }}
+                      className="inline-flex items-center gap-2 bg-gold px-6 py-2 font-mono text-xs uppercase tracking-wider text-[#07080A] font-bold cursor-pointer"
+                    >
+                      <Save className="h-4 w-4" />
+                      <span>Save Artwork Updates</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

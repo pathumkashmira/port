@@ -9,8 +9,12 @@ export function CustomCursor() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Only enable on desktop with fine pointers
-    if (typeof window === 'undefined' || window.matchMedia('(pointer: coarse)').matches) {
+    // Only enable on desktop with fine pointers (never on mobile / touch devices)
+    if (
+      typeof window === 'undefined' || 
+      window.matchMedia('(pointer: coarse)').matches ||
+      window.innerWidth < 1024
+    ) {
       return;
     }
 

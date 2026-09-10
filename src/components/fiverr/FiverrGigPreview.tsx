@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   Star, 
   CheckCircle2, 
@@ -72,9 +72,39 @@ const GIG_TIERS: GigTier[] = [
 
 export function FiverrGigPreview({ className = '' }: { className?: string }) {
   const [activeTier, setActiveTier] = useState<number>(0);
+  const [isInView, setIsInView] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') {
+      setIsInView(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          setIsInView(entry.isIntersecting);
+          if (videoRef.current) {
+            if (entry.isIntersecting) {
+              videoRef.current.play().catch(() => {});
+            } else {
+              videoRef.current.pause();
+            }
+          }
+        });
+      },
+      { rootMargin: '100px 0px', threshold: 0.05 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <div className={`overflow-hidden border border-emerald-500/40 dark:border-white/10 bg-white/95 dark:bg-[#07090F] shadow-[0_20px_60px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.6)] backdrop-blur-xl transition-all duration-300 ${className}`}>
+    <div ref={containerRef} className={`overflow-hidden border border-emerald-500/40 dark:border-white/10 bg-white/95 dark:bg-[#07090F] shadow-[0_20px_60px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.6)] backdrop-blur-xl transition-all duration-300 ${className}`}>
       {/* Brand Header Banner: Prominently Highlights FIVERR & ORVEX */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-stone-200 dark:border-white/10 bg-gradient-to-r from-emerald-500/10 via-teal-500/5 to-amber-500/10 px-6 py-4">
         <div className="flex items-center gap-3">
@@ -105,16 +135,17 @@ export function FiverrGigPreview({ className = '' }: { className?: string }) {
 
       <div className="grid lg:grid-cols-12 gap-0">
         {/* Left Visual Preview: Interactive 3D Product Animation Render Frame */}
-        <div className="lg:col-span-7 relative min-h-[340px] sm:min-h-[420px] bg-slate-950 flex flex-col justify-between p-6 overflow-hidden">
+        <div className="lg:col-span-7 relative min-h-[260px] sm:min-h-[380px] bg-slate-950 flex flex-col justify-between p-4 sm:p-6 overflow-hidden">
           {/* Background Video / Render Preview */}
           <video
-            autoPlay
+            ref={videoRef}
             loop
             muted
             playsInline
+            preload="metadata"
             className="absolute inset-0 h-full w-full object-cover opacity-85 contrast-[1.08] brightness-[1.04]"
           >
-            <source src="/videos/orvex-reel.mp4" type="video/mp4" />
+            {isInView && <source src="/videos/orvex-reel.mp4" type="video/mp4" />}
           </video>
 
           {/* Gradient Scrims for Text Legibility */}
