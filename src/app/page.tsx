@@ -225,8 +225,8 @@ export default function HomePage() {
                 </div>
               </ScrollReveal>
 
-              {/* Curated Project Grid - Desktop 3-Column Grid */}
-              <div className="mt-12 grid grid-cols-3 gap-8">
+              {/* Curated Project Grid */}
+              <div className="mt-8 sm:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                 {filteredProjects.map((project, idx) => {
                   const itemMode = selectedConfig?.itemPreviewModes?.[project.id] || globalPreviewMode;
                   return (

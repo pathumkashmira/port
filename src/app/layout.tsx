@@ -8,9 +8,9 @@ import { NoiseOverlay } from '@/components/ui/NoiseOverlay';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
 
 export const viewport: Viewport = {
-  width: 1280,
-  initialScale: 0.3,
-  minimumScale: 0.2,
+  width: 'device-width',
+  initialScale: 1,
+  minimumScale: 0.5,
   maximumScale: 5,
   userScalable: true,
 };
@@ -118,7 +118,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <head>
-        <meta name="viewport" content="width=1280, initial-scale=0.3, minimum-scale=0.2, maximum-scale=5, user-scalable=yes" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=5.0, user-scalable=yes" />
         <script
           dangerouslySetInnerHTML={{
             __html: `(function() {

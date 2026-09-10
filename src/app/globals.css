@@ -59,17 +59,19 @@ html {
   color: var(--text-primary);
   font-family: var(--font-inter);
   scroll-behavior: smooth;
-  min-width: 1280px;
+  overflow-x: hidden;
+  max-width: 100vw;
   -webkit-text-size-adjust: 100%;
 }
 
 body {
-  min-width: 1280px;
+  overflow-x: hidden;
+  max-width: 100vw;
   background: var(--bg-primary);
   min-height: 100vh;
   min-height: 100dvh;
   color: var(--text-primary);
-  touch-action: pan-y;
+  touch-action: manipulation;
   -webkit-overflow-scrolling: touch;
 }
 

@@ -84,7 +84,7 @@ export function Navigation() {
 
         {/* Desktop View Navigation Bar */}
         <nav 
-          className="flex items-center gap-5 lg:gap-6" 
+          className="flex items-center gap-4 sm:gap-6 overflow-x-auto no-scrollbar max-w-[58vw] sm:max-w-none py-1" 
           aria-label="Main Navigation"
         >
           {allNavLinks.map((link) => {
